@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="css/common.css" />
+		<link rel="stylesheet" href="style.css">
+	</head>
+	<body>
+		<div class="box" id="box">
+
+		</div>
+		<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+		<script>
+			$(function(){
+    var box=$('#box');
+    var html=''
+    +'<div class="slider" id="slider">'
+        +'<div class="slide">'
+        +'<img src="img/b5.png" alt="">'
+        +'</div>'
+        +'<div class="slide">'
+        +'<img src="img/b1.png" alt="">'
+        +'</div>'
+        +'<div class="slide">'
+        +'<img src="img/b2.png" alt="">'
+        +'</div>'
+        +'<div class="slide">'
+        +'<img src="img/b3.png" alt="">'
+        +'</div>'
+        +'<div class="slide">'
+        +'<img src="img/b4.png" alt="">'
+        +'</div>'
+        +'<div class="slide">'
+        +'<img src="img/b5.png" alt="">'
+        +'</div>'
+        +'<div class="slide">'
+        +'<img src="img/b1.png" alt="">'
+        +'</div>'
+    +'</div>'
+    +'<span id="left"><</span>'
+    +'<span id="right">></span>'
+    +'<ul class="nav" id="navs">'
+        +'<li class="num1">1</li>'
+        +'<li>2</li>'
+        +'<li>3</li>'
+        +'<li>4</li>'
+        +'<li>5</li>'
+    +'</ul>',
+    context=$(html);
+    box.append(context);
+
+    function getStyle(obj,attr){
+        if (obj.currentStyle) {
+            return obj.currentStyle[attr]
+        }else{
+            return getComputedStyle(obj,null)[attr];
+        }  
+    }
+    function animate(obj,json,callback){
+    clearInterval(obj.timer);
+    obj.timer = setInterval(function(){
+    var isStop = true;
+    for(var attr in json){
+        var now = 0;
+        if(attr == 'opacity'){
+            now = parseInt(getStyle(obj,attr)*100);
+        }else{
+            now = parseInt(getStyle(obj,attr));
+        }
+        var speed = (json[attr] - now) / 8;
+        speed = speed>0?Math.ceil(speed):Math.floor(speed);
+        var cur = now + speed;
+        if(attr == 'opacity'){
+            obj.style[attr] = cur / 100;
+        }else{
+            obj.style[attr] = cur + 'px';
+        }
+        if(json[attr] !== cur){
+            isStop = false;
+        }
+    }
+    if(isStop){
+        clearInterval(obj.timer);
+        callback&&callback();
+         }
+       }, 10)
+    }
+    //轮播图
+		var box = document.getElementById('box');
+		var len = document.getElementById('navs').children;
+		var slider = document.getElementById('slider');
+		var left = document.getElementById('left');
+		var right = document.getElementById('right');
+		var index = 1;
+		var timer;
+		var isMoving = false;
+		//轮播下一个函数
+		function next(){
+			index++;
+			hong();
+			animate(slider,{left:-1200*index},function(){
+				if (index===6) {
+					slider.style.left="-1200px";
+					index=1;}
+				});
+		}
+		function sahngyige(){
+			index--;
+			hong();
+			animate(slider,{left:-1200*index},function(){
+				if (index===0) {
+					slider.style.left="-6000px";
+					index=6;}
+				});
+		}
+		//鼠标划入并且关闭定时器
+		var timer=setInterval(next,2000);
+		box.onmouseover = function(){
+			animate(left,{opacity:50})
+			animate(right,{opacity:50})
+			clearInterval(timer)
+		}
+		//鼠标划出并且重新开启定时器
+		box.onmouseout = function(){
+			animate(left,{opacity:0})
+			animate(right,{opacity:0})
+			timer = setInterval(next, 2000);
+		}
+		//点击右边按钮轮播下一张
+		right.onclick = next; 
+		//点击左边按钮轮播上一张 
+		left.onclick = sahngyige;
+		//红点点
+		for(var i=0;i<len.length;i++){
+			len[i].index=i;
+			len[i].onclick=function(){
+				index=this.index+1;
+				hong();
+				animate(slider,{left:-1200*index});
+			}
+		}
+		//红点点的封装函数
+		function hong(){
+			for(var i=0;i<len.length;i++){
+				len[i].className='';
+			}
+			if (index===6) {
+				len[0].className='num1';
+			}else if(index===0){
+				len[4].className='num1';
+			}else{
+			    len[index-1].className='num1'; 
+			}
+        }
+}())
+		</script>
+	</body>
+</html> 
